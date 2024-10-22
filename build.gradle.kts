@@ -12,6 +12,9 @@ repositories {
 }
 
 dependencies {
+    implementation ("org.springframework.kafka:spring-kafka")
+
+
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
 
@@ -51,14 +54,19 @@ dependencies {
     /**
      * Mapper
      */
+
     implementation("org.mapstruct:mapstruct:1.5.3.Final")
     annotationProcessor("org.mapstruct:mapstruct-processor:1.5.3.Final")
 
     /*
     logging
      */
+    implementation("com.fasterxml.jackson.core:jackson-databind")
+
     implementation ("org.slf4j:slf4j-api:2.0.9")
     implementation ("ch.qos.logback:logback-classic:1.4.11")
+
+    runtimeOnly ("org.postgresql:postgresql")
 
 }
 

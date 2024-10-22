@@ -1,14 +1,19 @@
 package auth_service.entity;
 
+import auth_service.security.JwtTokenProvider;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-import org.hibernate.annotations.UuidGenerator;
+import org.hibernate.annotations.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -25,8 +30,8 @@ public class User {
     }
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "role")
-    private Role role;
+    @Column(name = "role", nullable = false)
+    private Role role = Role.STUDENT;
 
     @Id
     @Column(name = "id", updatable = false, nullable = false)
@@ -54,7 +59,12 @@ public class User {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @Column(name = "active")
-    private Boolean active;
 
+    @Column(name = "active")
+    private Boolean active = true;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Fetch(FetchMode.JOIN)
+    private List<Token> tokens = new ArrayList<>();
 }

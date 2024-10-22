@@ -1,15 +1,20 @@
 package auth_service.security;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
-
+@Component
 public class JwtTokenProvider {
-    private final long accessTokenValidity = 15 * 60 * 1000; // 15 минут
-    private final long refreshTokenValidity = 72 * 30 * 24 * 60 * 60 * 1000; // 6 лет примерно
+
+    @Value("${jwt.access.token.expiry}")
+    private long accessTokenValidity; // В миллисекундах
+
+    @Value("${jwt.refresh.token.expiry}")
+    private long refreshTokenValidity; // В миллисекундах
 
     private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
@@ -24,7 +29,7 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    private String generateRefreshToken(String username) {
+    public String generateRefreshToken(String username) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + refreshTokenValidity);
         return Jwts.builder()
@@ -34,4 +39,34 @@ public class JwtTokenProvider {
                 .signWith(key)
                 .compact();
     }
+
+    public String getUsernameFromToken(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.getSubject();
+    }
+
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            return true;
+        } catch (ExpiredJwtException ex) {
+            System.out.println("Token expired");
+        } catch (MalformedJwtException | UnsupportedJwtException | IllegalArgumentException ex) {
+            System.out.println("Invalid token");
+        }
+        return false;
+    }
+
+    public Date getAccessTokenExpiryDate() {
+        return new Date(System.currentTimeMillis() + accessTokenValidity);
+    }
+
+    public Date getRefreshTokenExpiryDate() {
+        return new Date(System.currentTimeMillis() + refreshTokenValidity);
+    }
+
 }

@@ -1,0 +1,33 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5433/auth_database
+    username: admin
+    password: 460461
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: false
+
+  kafka:
+    bootstrap-servers: localhost:9092
+
+jwt:
+  access:
+    token:
+      expiry: 7776000000
+  refresh:
+    token:
+      expiry: 186624000000
+
+server:
+  port: 8081
+
+user:
+  service:
+    url: http://localhost:8080/users
