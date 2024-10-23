@@ -32,16 +32,15 @@ public class TokenService {
 
         // Создаем новый объект токена
         Token token = Token.builder()
-                .id(UUID.randomUUID())  // Можно использовать встроенный генератор UUID, если нужно
+                .id(UUID.randomUUID())
                 .user(user)
                 .accessToken(accessToken)
                 .accessTokenExpiry(accessTokenExpiryDate.toInstant())
                 .refreshToken(refreshToken)
                 .refreshTokenExpiry(refreshTokenExpiryDate.toInstant())
-                .type(Token.TokenType.ACCESS)  // Или как требуется
+                .type(Token.TokenType.ACCESS)
                 .build();
 
-        // Сохраняем токен в базе данных
         return tokenRepository.save(token);
     }
 }
